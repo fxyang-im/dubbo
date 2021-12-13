@@ -47,31 +47,37 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
 
     /**
      * The interface class of the exported service
+     * 要暴露的RPC服务接口
      */
     protected Class<?> interfaceClass;
 
     /**
      * The reference of the interface implementation
+     * RPC服务接口的实现类
      */
     protected T ref;
 
     /**
      * The service name
+     * rpc服务名称
      */
     protected String path;
 
     /**
      * The provider configuration
+     * 服务提供者配置
      */
     protected ProviderConfig provider;
 
     /**
      * The providerIds
+     * 服务提供者id
      */
     protected String providerIds;
 
     /**
      * whether it is a GenericService
+     * 泛化调用标识
      */
     protected volatile String generic;
 
@@ -295,11 +301,14 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
 
 
     public void setInterface(Class<?> interfaceClass) {
-        if (interfaceClass != null && !interfaceClass.isInterface()) {
+        if(interfaceClass == null){
+            throw new IllegalStateException("The interface class is null!");
+        }
+        if (!interfaceClass.isInterface()) {
             throw new IllegalStateException("The interface class " + interfaceClass + " is not a interface!");
         }
         this.interfaceClass = interfaceClass;
-        setInterface(interfaceClass == null ? null : interfaceClass.getName());
+        setInterface(interfaceClass.getName());
     }
 
     public T getRef() {

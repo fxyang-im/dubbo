@@ -40,6 +40,7 @@ public class Application {
     private static void runWithBootstrap() {
         ReferenceConfig<DemoService> reference = new ReferenceConfig<>();
         reference.setInterface(DemoService.class);
+        // 开启泛化调用
         reference.setGeneric("true");
 
         DubboBootstrap bootstrap = DubboBootstrap.getInstance();

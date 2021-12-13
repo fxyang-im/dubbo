@@ -50,8 +50,11 @@ import static org.apache.dubbo.config.Constants.TEST_ENVIRONMENT;
 
 /**
  * The application info
- *
- * @export
+ * dubbo有三重层级
+ * 1. application（应用级 进程）
+ * 2. service(服务级 rpc接口)
+ * 3. method 方法级 rpc接口方法
+ * @author dubbo
  */
 public class ApplicationConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);

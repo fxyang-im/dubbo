@@ -98,6 +98,10 @@ import static org.apache.dubbo.rpc.Constants.SCOPE_REMOTE;
 import static org.apache.dubbo.rpc.Constants.TOKEN_KEY;
 import static org.apache.dubbo.rpc.cluster.Constants.EXPORT_KEY;
 
+/**
+ * 服务声明（rpc接口及其实现类）
+ * @param <T>
+ */
 public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
     private static final long serialVersionUID = -412700146501624375L;
@@ -105,43 +109,62 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
     public static final Logger logger = LoggerFactory.getLogger(ServiceConfig.class);
 
     /**
+     * 不同协议提供服务的端口范围
      * A random port cache, the different protocols who has no port specified have different random port
+     * key: 协议
+     * value： 端口
      */
     private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>();
 
     /**
      * A delayed exposure service timer
+     * 服务用于延迟发布的线程池
      */
     private static final ScheduledExecutorService DELAY_EXPORT_EXECUTOR =
             Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
 
     private String serviceName;
 
+    /**
+     * 基于spi的协议类型选择
+     */
     private static final Protocol PROTOCOL = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
     /**
-     * A {@link ProxyFactory} implementation that will generate a exported service proxy,the JavassistProxyFactory is its
+     * A {@link ProxyFactory} implementation that will generate a exported service proxy,
+     * ProxyFactory用于生成一个service的代理类
+     * 默认使用的是JavassistProxyFactory工厂
+     * the JavassistProxyFactory is its
      * default implementation
      */
     private static final ProxyFactory PROXY_FACTORY = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
     /**
      * Whether the provider has been exported
+     * 提供者是否暴露
      */
     private transient volatile boolean exported;
 
     /**
+     * 服务未暴露标识，unexported方法被调用后，这个值为true
      * The flag whether a service has unexported ,if the method unexported is invoked, the value is true
      */
     private transient volatile boolean unexported;
 
+    /**
+     *   dubbo 启动引导类（所有服务都持有这个引导类）
+     */
     private DubboBootstrap bootstrap;
 
     /**
      * The exported services
+     * 暴露的服务列表
      */
     private final List<Exporter<?>> exporters = new ArrayList<Exporter<?>>();
 
+    /**
+     * 配置初始化协议
+     */
     private static final String CONFIG_INITIALIZER_PROTOCOL = "configInitializer://";
 
     private static final String TRUE_VALUE = "true";
@@ -205,6 +228,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
     @Override
     public synchronized void export() {
+        // 多线程同步
         if (bootstrap == null) {
             bootstrap = DubboBootstrap.getInstance();
             // compatible with api call.

@@ -24,6 +24,7 @@ import org.apache.dubbo.remoting.Client;
 
 /**
  * ReconnectTimerTask
+ * 长链接保活机制
  */
 public class ReconnectTimerTask extends AbstractTimerTask {
 
@@ -44,6 +45,7 @@ public class ReconnectTimerTask extends AbstractTimerTask {
 
             // Rely on reconnect timer to reconnect when AbstractClient.doConnect fails to init the connection
             if (!channel.isConnected()) {
+                // 如果长链接断开则进行重连
                 try {
                     logger.info("Initial connection to " + channel);
                     ((Client) channel).reconnect();
@@ -52,6 +54,7 @@ public class ReconnectTimerTask extends AbstractTimerTask {
                 }
             // check pong at client
             } else if (lastRead != null && now - lastRead > idleTimeout) {
+                // 如果长链接超过心跳维护时间，则进行重连
                 logger.warn("Reconnect to channel " + channel + ", because heartbeat read idle time out: "
                         + idleTimeout + "ms");
                 try {

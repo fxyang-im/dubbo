@@ -212,9 +212,11 @@ public class RegistryConfig extends AbstractConfig {
     }
 
     public void setAddress(String address) {
+        // 设置地址
         this.address = address;
         if (address != null) {
             try {
+                // 从url中解析用户名，密码，协议，端口
                 URL url = URL.valueOf(address);
 
                 // Refactor since 2.7.8

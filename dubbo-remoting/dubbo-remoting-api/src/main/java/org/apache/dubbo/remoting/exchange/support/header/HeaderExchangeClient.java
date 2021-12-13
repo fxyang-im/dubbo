@@ -198,6 +198,7 @@ public class HeaderExchangeClient implements ExchangeClient {
 
     private void startReconnectTask(URL url) {
         if (shouldReconnect(url)) {
+            // 通过重连标识进行判断
             AbstractTimerTask.ChannelProvider cp = () -> Collections.singletonList(HeaderExchangeClient.this);
             int idleTimeout = getIdleTimeout(url);
             long heartbeatTimeoutTick = calculateLeastDuration(idleTimeout);

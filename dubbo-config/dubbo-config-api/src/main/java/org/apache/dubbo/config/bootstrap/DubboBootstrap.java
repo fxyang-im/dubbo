@@ -189,8 +189,10 @@ public class DubboBootstrap {
      * See {@link ApplicationModel} and {@link ExtensionLoader} for why DubboBootstrap is designed to be singleton.
      */
     public static DubboBootstrap getInstance() {
+        // 单例模式的dubbo启动引导类
         if (instance == null) {
             synchronized (DubboBootstrap.class) {
+                // 双重check，通过volatile保证指令不重排
                 if (instance == null) {
                     instance = new DubboBootstrap();
                 }
@@ -202,8 +204,9 @@ public class DubboBootstrap {
     private DubboBootstrap() {
         configManager = ApplicationModel.getConfigManager();
         environment = ApplicationModel.getEnvironment();
-
+        // 注册dubbo关闭钩子
         DubboShutdownHook.getDubboShutdownHook().register();
+        // 添加回调方法，用来销毁DubboBootstrap单例
         ShutdownHookCallbacks.INSTANCE.addCallback(DubboBootstrap.this::destroy);
     }
 
@@ -509,7 +512,7 @@ public class DubboBootstrap {
     }
 
     /**
-     * Initialize
+     * Initialize 初始化状态迁移
      */
     public void initialize() {
         if (!initialized.compareAndSet(false, true)) {
@@ -873,16 +876,18 @@ public class DubboBootstrap {
 
     /**
      * Start the bootstrap
+     * dubbo 引导类启动
      */
     public DubboBootstrap start() {
         if (started.compareAndSet(false, true)) {
+            // 状态机变化 start->initialize->
             destroyed.set(false);
             ready.set(false);
             initialize();
             if (logger.isInfoEnabled()) {
                 logger.info(NAME + " is starting...");
             }
-            // 1. export Dubbo Services
+            // 1. export Dubbo Services 暴露dubbo服务
             exportServices();
 
             // Not only provider register
@@ -1070,9 +1075,11 @@ public class DubboBootstrap {
         configManager.getServices().forEach(sc -> {
             // TODO, compatible with ServiceConfig.export()
             ServiceConfig serviceConfig = (ServiceConfig) sc;
+            // 每个服务都持有单例的DubboBootstrap
             serviceConfig.setBootstrap(this);
 
             if (exportAsync) {
+                // 异步暴露服务 （基于线程池实现）
                 ExecutorService executor = executorRepository.getServiceExporterExecutor();
                 Future<?> future = executor.submit(() -> {
                     try {
@@ -1083,6 +1090,7 @@ public class DubboBootstrap {
                 });
                 asyncExportingFutures.add(future);
             } else {
+                // 同步暴露
                 exportService(serviceConfig);
             }
         });
@@ -1090,6 +1098,8 @@ public class DubboBootstrap {
 
     private void exportService(ServiceConfig sc) {
         if (exportedServices.containsKey(sc.getServiceName())) {
+            // serviceName由三元组组成 group ，interface ，version
+            // 如果一个rpc接口想要暴露多个服务，可以通过改变group或者version来实现一个rpc接口多个实现类
             throw new IllegalStateException("There are multiple ServiceBean instances with the same service name: [" +
                     sc.getServiceName() + "], instances: [" +
                     exportedServices.get(sc.getServiceName()).toString() + ", " +
