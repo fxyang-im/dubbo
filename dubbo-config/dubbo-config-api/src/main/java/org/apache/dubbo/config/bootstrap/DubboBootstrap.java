@@ -519,8 +519,9 @@ public class DubboBootstrap {
             return;
         }
 
+        // 通过SPI扩展注入框架扩展
         ApplicationModel.initFrameworkExts();
-
+        // 启动配置中心
         startConfigCenter();
 
         loadRemoteConfigs();
@@ -736,7 +737,7 @@ public class DubboBootstrap {
 
     /**
      * Is used the specified registry as a center infrastructure
-     *
+     * 是否将注册中心作为配置中心（通过）
      * @param registryConfig       the {@link RegistryConfig}
      * @param usedRegistryAsCenter the configured value on
      * @param centerType           the type name of center
@@ -748,7 +749,7 @@ public class DubboBootstrap {
                                            String centerType,
                                            Class<?> extensionClass) {
         final boolean supported;
-
+        // dubbo的注册中心可以配置作为配置中心
         Boolean configuredValue = usedRegistryAsCenter.get();
         if (configuredValue != null) { // If configured, take its value.
             supported = configuredValue.booleanValue();

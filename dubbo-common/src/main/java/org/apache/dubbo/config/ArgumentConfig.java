@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 /**
  * The method arguments configuration
+ * 方法参数配置
  *
  * @export
  */
