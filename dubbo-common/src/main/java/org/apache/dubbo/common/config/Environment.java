@@ -108,9 +108,22 @@ public class Environment extends LifecycleAdapter implements FrameworkExt {
     }
 
     /**
+     *
+     * 在dubbo启动时，会加载各种配置：
+     * 应用配置ApplicationConfig
+     * 注册配置RegisterConfig
+     * 服务配置：ServiceConfig
+     * 消费者配置：ConsumerConfig
+     * 提供者配置：ProviderConfig
+     * 方法配置：MethodConfig
+     * 参数配置：ArgumentConfig
+     * 所有的配置信息都会添加到一个复合引用中。
      * At start-up, Dubbo is driven by various configuration, such as Application, Registry, Protocol, etc.
      * All configurations will be converged into a data bus - URL, and then drive the subsequent process.
      * <p>
+     * 配置的来源有很多
+     * xml，properties，api，系统环境变量，jvm参数，启动参数，配置中心等
+     * 这个方法通过自身定义的优先级来剔除重复设置的变量
      * At present, there are many configuration sources, including AbstractConfig (API, XML, annotation), - D, config center, etc.
      * This method helps us to filter out the most priority values from various configuration sources.
      *
@@ -121,13 +134,24 @@ public class Environment extends LifecycleAdapter implements FrameworkExt {
         CompositeConfiguration prefixedConfiguration = new CompositeConfiguration(config.getPrefix(), config.getId());
         Configuration configuration = new ConfigConfigurationAdapter(config);
         if (this.isConfigCenterFirst()) {
-            // The sequence would be: SystemConfiguration -> AppExternalConfiguration -> ExternalConfiguration -> AbstractConfig -> PropertiesConfiguration
-            // Config center has the highest priority
+            // The sequence would be:
+            // SystemConfiguration
+            // -> AppExternalConfiguration
+            // -> ExternalConfiguration
+            // -> AbstractConfig
+            // -> PropertiesConfiguration
+            // Config center has the highest priority 配置中心拥有最高级的权限
+            // 系统配置
             prefixedConfiguration.addConfiguration(systemConfiguration);
+            // 环境配置
             prefixedConfiguration.addConfiguration(environmentConfiguration);
+            // 应用扩展配置
             prefixedConfiguration.addConfiguration(appExternalConfiguration);
+            // 扩展配置
             prefixedConfiguration.addConfiguration(externalConfiguration);
+            // 基本配置
             prefixedConfiguration.addConfiguration(configuration);
+            // 属性配置
             prefixedConfiguration.addConfiguration(propertiesConfiguration);
         } else {
             // The sequence would be: SystemConfiguration -> AbstractConfig -> AppExternalConfiguration -> ExternalConfiguration -> PropertiesConfiguration
