@@ -220,6 +220,9 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
         return CollectionUtils.isEmpty(protocols) && StringUtils.isEmpty(protocolIds);
     }
 
+    /**
+     * 完成复合配置
+     */
     public void completeCompoundConfigs() {
         super.completeCompoundConfigs(provider);
         if (provider != null) {
