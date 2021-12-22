@@ -62,12 +62,12 @@ public class ApplicationConfig extends AbstractConfig {
     private static final long serialVersionUID = 5508512956753757169L;
 
     /**
-     * Application name
+     * Application name 应用名称
      */
     private String name;
 
     /**
-     * The application version
+     * The application version 应用版本
      */
     private String version;
 
@@ -102,48 +102,48 @@ public class ApplicationConfig extends AbstractConfig {
     private String logger;
 
     /**
-     * Registry centers
+     * Registry centers 注册中心
      */
     private List<RegistryConfig> registries;
     private String registryIds;
 
     /**
-     * Monitor center
+     * Monitor center 监控中心配置
      */
     private MonitorConfig monitor;
 
     /**
-     * Directory for saving thread dump
+     * Directory for saving thread dump存储线程dump的目录
      */
     private String dumpDirectory;
 
     /**
-     * Whether to enable qos or not
+     * Whether to enable qos or not qos消息级别是否启动
      */
     private Boolean qosEnable;
 
     /**
-     * The qos host to listen
+     * The qos host to listen监听qos的主机
      */
     private String qosHost;
 
     /**
-     * The qos port to listen
+     * The qos port to listen qos的端口
      */
     private Integer qosPort;
 
     /**
-     * Should we accept foreign ip or not?
+     * Should we accept foreign ip or not? 是否接收外网的消息
      */
     private Boolean qosAcceptForeignIp;
 
     /**
-     * Customized parameters
+     * Customized parameters 定制化参数
      */
     private Map<String, String> parameters;
 
     /**
-     * Config the shutdown.wait
+     * Config the shutdown.wait 配置关闭等待时间
      */
     private String shutwait;
 
@@ -151,6 +151,9 @@ public class ApplicationConfig extends AbstractConfig {
 
     /**
      * Metadata type, local or remote, if choose remote, you need to further specify metadata center.
+     * 元数据类型：
+     * 本地：
+     * 远程： 需要特殊配置元数据中心
      */
     private String metadataType;
 
@@ -162,6 +165,7 @@ public class ApplicationConfig extends AbstractConfig {
 
     /**
      * Metadata Service, used in Service Discovery
+     * 元数据暴露端口，用于服务发现
      */
     private Integer metadataServicePort;
 

@@ -39,6 +39,7 @@ import static org.apache.dubbo.config.Constants.ZOOKEEPER_PROTOCOL;
 
 /**
  * ConfigCenterConfig
+ * 配置中心配置
  */
 public class ConfigCenterConfig extends AbstractConfig {
     private AtomicBoolean inited = new AtomicBoolean(false);
@@ -47,16 +48,22 @@ public class ConfigCenterConfig extends AbstractConfig {
     private String address;
     private Integer port;
 
-    /* The config center cluster, it's real meaning may very on different Config Center products. */
+    /* The config center cluster,
+     * it's real meaning may very on different Config Center products.
+     * 配置中心集群
+     *
+     */
     private String cluster;
 
     /* The namespace of the config center, generally it's used for multi-tenant,
     but it's real meaning depends on the actual Config Center you use.
+    * 配置中心的命名空间
     */
 
     private String namespace = CommonConstants.DUBBO;
     /* The group of the config center, generally it's used to identify an isolated space for a batch of config items,
     but it's real meaning depends on the actual Config Center you use.
+    * 命名空间下的分组
     */
     private String group = CommonConstants.DUBBO;
     private String username;
@@ -64,13 +71,18 @@ public class ConfigCenterConfig extends AbstractConfig {
     private Long timeout = 3000L;
 
     // If the Config Center is given the highest priority, it will override all the other configurations
+    /**
+     * 配置中心是否具备高优先级，可以覆盖其他配置
+     */
     private Boolean highestPriority = true;
 
     // Decide the behaviour when initial connection try fails, 'true' means interrupt the whole process once fail.
+    // 检查配置是否启动，未启动则中断服务启动进程
     private Boolean check = true;
 
     /* Used to specify the key that your properties file mapping to, most of the time you do not need to change this parameter.
     Notice that for Apollo, this parameter is meaningless, set the 'namespace' is enough.
+    * 觉多大多数无需修改的参数配置放在这个文件下dubbo.properties
     */
     private String configFile = CommonConstants.DEFAULT_DUBBO_PROPERTIES;
 
