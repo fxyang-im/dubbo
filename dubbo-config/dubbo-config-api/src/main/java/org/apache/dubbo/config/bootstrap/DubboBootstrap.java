@@ -523,14 +523,15 @@ public class DubboBootstrap {
         ApplicationModel.initFrameworkExts();
         // 启动配置中心
         startConfigCenter();
-
+        // 加载远程配置
         loadRemoteConfigs();
-
+        // 检查全局配置
         checkGlobalConfigs();
 
         // @since 2.7.8
+        // 构建元数据中心
         startMetadataCenter();
-
+        // 初始化元数据服务
         initMetadataService();
 
         if (logger.isInfoEnabled()) {
@@ -538,6 +539,9 @@ public class DubboBootstrap {
         }
     }
 
+    /**
+     * 检查配置
+     */
     private void checkGlobalConfigs() {
         // check Application
         ConfigValidationUtils.validateApplicationConfig(getApplication());
@@ -597,6 +601,7 @@ public class DubboBootstrap {
     }
 
     private void startConfigCenter() {
+
 
         useRegistryAsConfigCenterIfNecessary();
 

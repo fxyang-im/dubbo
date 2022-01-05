@@ -133,6 +133,7 @@ public class Environment extends LifecycleAdapter implements FrameworkExt {
     public synchronized CompositeConfiguration getPrefixedConfiguration(AbstractConfig config) {
         CompositeConfiguration prefixedConfiguration = new CompositeConfiguration(config.getPrefix(), config.getId());
         Configuration configuration = new ConfigConfigurationAdapter(config);
+        // 配置中心优先
         if (this.isConfigCenterFirst()) {
             // The sequence would be:
             // SystemConfiguration

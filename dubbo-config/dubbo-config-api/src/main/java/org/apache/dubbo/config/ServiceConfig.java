@@ -230,6 +230,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
     public synchronized void export() {
         // 多线程同步
         if (bootstrap == null) {
+            // bootstrap未初始化的情况
             bootstrap = DubboBootstrap.getInstance();
             // compatible with api call.
             if (null != this.getRegistry()) {
@@ -241,6 +242,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
         checkAndUpdateSubConfigs();
 
+        //初始化服务元数据信息
         initServiceMetadata(provider);
         serviceMetadata.setServiceType(getInterfaceClass());
         serviceMetadata.setTarget(getRef());
@@ -280,6 +282,9 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         dispatch(new ServiceConfigExportedEvent(this));
     }
 
+    /**
+     * 要暴露的服务配置处理
+     */
     private void checkAndUpdateSubConfigs() {
         // Use default configs defined explicitly with global scope
         completeCompoundConfigs();
