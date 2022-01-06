@@ -348,7 +348,9 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
         ServiceRepository repository = ApplicationModel.getServiceRepository();
+        // 服务封装（接口及其方法的封装）
         ServiceDescriptor serviceDescriptor = repository.registerService(getInterfaceClass());
+        //JVM级注册为提供者
         repository.registerProvider(
                 getUniqueServiceName(),
                 ref,
@@ -357,44 +359,58 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
                 serviceMetadata
         );
 
+        // 根据不同的协议加载为不同的url
         List<URL> registryURLs = ConfigValidationUtils.loadRegistries(this, true);
 
+        // 协议类型
         int protocolConfigNum = protocols.size();
         for (ProtocolConfig protocolConfig : protocols) {
             String pathKey = URL.buildKey(getContextPath(protocolConfig)
                     .map(p -> p + "/" + path)
                     .orElse(path), group, version);
             // In case user specified path, register service one more time to map it to path.
+            // 注册到jvm的service中
             repository.registerService(pathKey, interfaceClass);
+            // 根据协议进行url级暴露
             doExportUrlsFor1Protocol(protocolConfig, registryURLs, protocolConfigNum);
         }
     }
 
     private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs, int protocolConfigNum) {
+        //获取协议名称
         String name = protocolConfig.getName();
         if (StringUtils.isEmpty(name)) {
             name = DUBBO;
         }
-
+        // 暴露作为提供者
         Map<String, String> map = new HashMap<String, String>();
         map.put(SIDE_KEY, PROVIDER_SIDE);
-
+        // 加载运行时参数
         ServiceConfig.appendRuntimeParameters(map);
+        // 加载监控参数
         AbstractConfig.appendParameters(map, getMetrics());
+        // 加载应用参数
         AbstractConfig.appendParameters(map, getApplication());
+        // 加载模型参数
         AbstractConfig.appendParameters(map, getModule());
         // remove 'default.' prefix for configs from ProviderConfig
         // appendParameters(map, provider, Constants.DEFAULT_KEY);
+        // 加载提供者信息
         AbstractConfig.appendParameters(map, provider);
+        // 协议
         AbstractConfig.appendParameters(map, protocolConfig);
+        // service配置
         AbstractConfig.appendParameters(map, this);
+        // 元数据上报配置
         MetadataReportConfig metadataReportConfig = getMetadataReportConfig();
         if (metadataReportConfig != null && metadataReportConfig.isValid()) {
             map.putIfAbsent(METADATA_KEY, REMOTE_METADATA_STORAGE_TYPE);
         }
         if (CollectionUtils.isNotEmpty(getMethods())) {
             for (MethodConfig method : getMethods()) {
+                // 要暴露的接口中每个方法的配置
                 AbstractConfig.appendParameters(map, method, method.getName());
+                // 重试key
                 String retryKey = method.getName() + RETRY_SUFFIX;
                 if (map.containsKey(retryKey)) {
                     String retryValue = map.remove(retryKey);
@@ -402,8 +418,10 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
                         map.put(method.getName() + RETRIES_SUFFIX, ZERO_VALUE);
                     }
                 }
+                //
                 List<ArgumentConfig> arguments = method.getArguments();
                 if (CollectionUtils.isNotEmpty(arguments)) {
+                    // 参数配置
                     for (ArgumentConfig argument : arguments) {
                         // convert argument type
                         if (argument.getType() != null && argument.getType().length() > 0) {
@@ -413,6 +431,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
                                 for (int i = 0; i < methods.length; i++) {
                                     String methodName = methods[i].getName();
                                     // target the method, and get its signature
+                                    // 方法配置与方法进行匹配
                                     if (methodName.equals(method.getName())) {
                                         Class<?>[] argtypes = methods[i].getParameterTypes();
                                         // one callback in the method
